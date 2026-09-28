@@ -1,0 +1,66 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+# Cancel superseded runs on the same branch — the previous result is no longer
+# interesting once a newer commit exists.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    name: Lint, types and tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 24
+          cache: npm
+
+      - run: npm ci
+
+      # next lint was removed in Next 16; ESLint is invoked directly with flat config.
+      - run: npm run lint
+
+      - run: npm run typecheck
+
+      - run: npm test
+
+      - run: npm run format:check
+
+  build:
+    name: Build (${{ matrix.client }})
+    runs-on: ubuntu-latest
+    needs: verify
+    strategy:
+      # One client's build failing should not hide the state of the other two.
+      fail-fast: false
+      matrix:
+        include:
+          - client: dental
+            site_url: https://bridgeroaddental.duckdns.org
+          - client: cafe
+            site_url: https://fitzroyroasters.duckdns.org
+          - client: plumber
+            site_url: https://northcoteplumbing.duckdns.org
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 24
+          cache: npm
+
+      - run: npm ci
+
+      # Proves the config-driven claim: the same source tree builds every client.
+      - run: npm run build
+        env:
+          CLIENT_ID: ${{ matrix.client }}
+          NEXT_PUBLIC_SITE_URL: ${{ matrix.site_url }}

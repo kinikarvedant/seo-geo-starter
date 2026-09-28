@@ -1,0 +1,65 @@
+@import "tailwindcss";
+
+/*
+ * Brand tokens resolve to CSS custom properties, not literal colours, so the compiled
+ * stylesheet is identical for every client and the brand is swapped by the inline
+ * `:root` block that layout.tsx renders from config. `@theme inline` is what makes
+ * `bg-brand-600` compile to `var(--brand-600)` rather than baking the value in.
+ *
+ * Opacity modifiers (bg-brand-600/20) still work: Tailwind v4 applies color-mix() to
+ * the variable.
+ */
+@theme inline {
+  --color-brand-50: var(--brand-50);
+  --color-brand-100: var(--brand-100);
+  --color-brand-200: var(--brand-200);
+  --color-brand-300: var(--brand-300);
+  --color-brand-400: var(--brand-400);
+  --color-brand-500: var(--brand-500);
+  --color-brand-600: var(--brand-600);
+  --color-brand-700: var(--brand-700);
+  --color-brand-800: var(--brand-800);
+  --color-brand-900: var(--brand-900);
+  --color-brand-950: var(--brand-950);
+
+  --color-accent-50: var(--accent-50);
+  --color-accent-100: var(--accent-100);
+  --color-accent-200: var(--accent-200);
+  --color-accent-300: var(--accent-300);
+  --color-accent-400: var(--accent-400);
+  --color-accent-500: var(--accent-500);
+  --color-accent-600: var(--accent-600);
+  --color-accent-700: var(--accent-700);
+  --color-accent-800: var(--accent-800);
+  --color-accent-900: var(--accent-900);
+  --color-accent-950: var(--accent-950);
+
+  --radius-brand: var(--brand-radius);
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
+  /* Anchored headings must not hide under the sticky header. */
+  :target {
+    scroll-margin-top: 5rem;
+  }
+
+  body {
+    text-wrap: pretty;
+  }
+
+  h1,
+  h2,
+  h3 {
+    text-wrap: balance;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+  }
+}
