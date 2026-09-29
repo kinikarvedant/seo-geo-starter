@@ -64,3 +64,18 @@ jobs:
         env:
           CLIENT_ID: ${{ matrix.client }}
           NEXT_PUBLIC_SITE_URL: ${{ matrix.site_url }}
+
+      # server.js does not copy these itself — see the Next docs on standalone output.
+      - name: Assemble the standalone bundle
+        run: |
+          cp -r public .next/standalone/
+          cp -r .next/static .next/standalone/.next/
+
+      # Boots the built server and fetches every URL the route inventory claims, checks
+      # the served <title> against it, and confirms the pages we deliberately did not
+      # generate return 404. Unit tests cannot cover any of that.
+      - name: Smoke test the endpoints
+        run: npm run smoke
+        env:
+          CLIENT_ID: ${{ matrix.client }}
+          NEXT_PUBLIC_SITE_URL: ${{ matrix.site_url }}
