@@ -4,6 +4,8 @@ import { setTimeout as sleep } from "node:timers/promises";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { client } from "@/config/load";
 import { allRoutes } from "@/lib/seo/routes";
+import { validateJsonLdBlob } from "@/lib/seo/jsonld/validators";
+import { resolveAiRules } from "@/lib/geo/aiCrawlers";
 
 /**
  * Endpoint smoke test against a real running build.
@@ -158,5 +160,143 @@ describe(`internal links resolve (${client.id})`, () => {
     }
 
     expect(broken, broken.join("\n")).toEqual([]);
+  });
+});
+
+/** Every JSON-LD payload embedded in a page. */
+function jsonLdBlobs(html: string): string[] {
+  return [
+    ...html.matchAll(/<script[^>]*type="application\/ld\+json"[^>]*>([\s\S]*?)<\/script>/g),
+  ].map((m) => m[1]);
+}
+
+/**
+ * Text content of every element carrying the given attribute.
+ *
+ * Matches to the element's own closing tag rather than the next `<`, because answer
+ * bodies contain nested markup from the Markdown renderer — stopping at the first `<`
+ * returns an empty string and makes a comparison test silently pass on nothing.
+ */
+function textOf(html: string, attribute: string): string[] {
+  const pattern = new RegExp(`<(\\w+)[^>]*\\b${attribute}\\b[^>]*>([\\s\\S]*?)</\\1>`, "g");
+  return [...html.matchAll(pattern)].map((m) =>
+    decodeEntities(
+      m[2]
+        .replace(/<[^>]*>/g, " ")
+        .replace(/\s+/g, " ")
+        .trim(),
+    ),
+  );
+}
+
+describe(`structured data (${client.id})`, () => {
+  it("emits a valid site entity graph on every page", async () => {
+    for (const route of routes) {
+      const html = await (await fetch(`${BASE}${route.path}`)).text();
+      const blobs = jsonLdBlobs(html);
+      expect(blobs.length, `${route.path} has no JSON-LD`).toBeGreaterThan(0);
+
+      for (const blob of blobs) {
+        const issues = validateJsonLdBlob(blob);
+        expect(issues, `${route.path}: ${JSON.stringify(issues)}`).toEqual([]);
+      }
+    }
+  });
+
+  it("never serves aggregateRating anywhere on the site", async () => {
+    for (const route of routes) {
+      const html = await (await fetch(`${BASE}${route.path}`)).text();
+      expect(html, `${route.path} leaked aggregateRating`).not.toContain("aggregateRating");
+    }
+  });
+
+  it("escapes < in JSON-LD so config copy cannot break out of the script tag", async () => {
+    const html = await (await fetch(`${BASE}/`)).text();
+    for (const blob of jsonLdBlobs(html)) {
+      expect(blob).not.toContain("</script");
+      expect(blob).not.toMatch(/<[a-zA-Z/]/);
+    }
+  });
+
+  it("declares exactly one FAQPage node per page, never more", async () => {
+    for (const route of routes) {
+      const html = await (await fetch(`${BASE}${route.path}`)).text();
+      const faqNodes = jsonLdBlobs(html).filter((b) => b.includes('"FAQPage"'));
+      expect(
+        faqNodes.length,
+        `${route.path} has ${faqNodes.length} FAQPage nodes`,
+      ).toBeLessThanOrEqual(1);
+    }
+  });
+
+  it("keeps the visible FAQs and the FAQ markup identical", async () => {
+    // The single-source guarantee, checked against what the server actually sent —
+    // stronger than asserting it in a component test, because it survives the whole
+    // render pipeline.
+    let pagesChecked = 0;
+
+    for (const route of routes) {
+      const html = await (await fetch(`${BASE}${route.path}`)).text();
+      const faqNode = jsonLdBlobs(html).find((b) => b.includes('"FAQPage"'));
+      if (!faqNode) continue;
+
+      const parsed = JSON.parse(faqNode) as {
+        mainEntity: { name: string; acceptedAnswer: { text: string } }[];
+      };
+      const markupQuestions = parsed.mainEntity.map((q) => q.name).sort();
+      const visibleQuestions = textOf(html, "data-faq-q").sort();
+      expect(visibleQuestions, `${route.path} question mismatch`).toEqual(markupQuestions);
+
+      // Answers too, not just questions. Comparing only the questions would miss the
+      // case where the rendered answer and the schema text disagree — which is the
+      // drift most likely to happen, because the answer is where the markdown is.
+      const answerText = (value: string) => value.replace(/\s+/g, " ").trim();
+      const markupAnswers = parsed.mainEntity.map((q) => answerText(q.acceptedAnswer.text)).sort();
+      const visibleAnswers = textOf(html, "data-faq-a").map(answerText).sort();
+      expect(visibleAnswers, `${route.path} answer mismatch`).toEqual(markupAnswers);
+
+      pagesChecked++;
+    }
+
+    expect(pagesChecked, "no page emitted FAQ markup, so nothing was verified").toBeGreaterThan(0);
+  });
+});
+
+describe(`sitemap and robots (${client.id})`, () => {
+  it("serves a sitemap listing exactly the indexable routes", async () => {
+    const res = await fetch(`${BASE}/sitemap.xml`);
+    expect(res.status).toBe(200);
+    expect(res.headers.get("content-type")).toContain("xml");
+
+    const xml = await res.text();
+    const urls = [...xml.matchAll(/<loc>([^<]+)<\/loc>/g)].map((m) => m[1]);
+    const expected = routes
+      .filter((r) => r.indexable)
+      .map((r) => (r.path === "/" ? client.site.url : `${client.site.url}${r.path}`));
+
+    expect(urls.sort()).toEqual(expected.sort());
+  });
+
+  it("serves robots.txt with the sitemap and the configured AI crawler policy", async () => {
+    const res = await fetch(`${BASE}/robots.txt`);
+    expect(res.status).toBe(200);
+
+    const body = await res.text();
+    expect(body).toContain(`Sitemap: ${client.site.url}/sitemap.xml`);
+
+    for (const rule of resolveAiRules(client.ai)) {
+      expect(body, `${rule.userAgent} missing from robots.txt`).toContain(
+        `User-Agent: ${rule.userAgent}`,
+      );
+    }
+  });
+
+  it("does not block crawlers on a demo site, so its noindex stays readable", async () => {
+    // A Disallow would stop the crawler fetching the page, which means it never sees
+    // the noindex meta tag — the page can then be indexed from inbound links anyway.
+    if (!client.demo) return;
+    const body = await (await fetch(`${BASE}/robots.txt`)).text();
+    const wildcard = body.split(/User-Agent:/i)[1] ?? "";
+    expect(wildcard).not.toMatch(/Disallow:\s*\/\s*$/m);
   });
 });
