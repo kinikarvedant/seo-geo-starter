@@ -7,6 +7,10 @@ import { client } from "@/config/load";
 import type { Service } from "@/config/schema";
 import { hrefs } from "@/lib/linking/hrefs";
 import { buildMetadata } from "@/lib/seo/metadata";
+import { JsonLd } from "@/components/seo/JsonLd";
+import { FAQSection } from "@/components/aeo/FAQSection";
+import { serviceJsonLd } from "@/lib/seo/jsonld/content";
+import { absoluteUrl } from "@/lib/linking/hrefs";
 
 export const dynamic = "force-static";
 /** Every service page comes from config, so an unknown slug is a 404, never a render. */
@@ -61,6 +65,8 @@ export default async function ServiceDetail({ params }: PageProps<"/services/[se
         ]}
       />
 
+      <JsonLd id={`service-${service.slug}`} data={serviceJsonLd(client, service)} />
+
       <article>
         <h1 className="text-3xl font-bold text-slate-900 sm:text-4xl">{service.name}</h1>
 
@@ -106,23 +112,12 @@ export default async function ServiceDetail({ params }: PageProps<"/services/[se
           <Markdown content={service.body} />
         </div>
 
-        {service.faqs.length > 0 && (
-          <section aria-labelledby="service-faqs" className="mt-12">
-            <h2 id="service-faqs" className="text-xl font-semibold text-slate-900">
-              {service.name}: common questions
-            </h2>
-            {/* Plain markup for now: the FAQPage JSON-LD is a later milestone and must
-                come from the same field as this copy, not a second rendering of it. */}
-            <dl data-aeo="faq" className="mt-4 space-y-5">
-              {service.faqs.map((faq) => (
-                <div key={faq.question} className="rounded-brand border border-slate-200 p-5">
-                  <dt className="font-semibold text-slate-900">{faq.question}</dt>
-                  <dd className="mt-2 text-slate-700">{faq.answer}</dd>
-                </div>
-              ))}
-            </dl>
-          </section>
-        )}
+        <FAQSection
+          faqs={service.faqs}
+          pageUrl={absoluteUrl(client.site.url, hrefs.service(service.slug))}
+          heading={`${service.name} — common questions`}
+          headingId="service-faqs"
+        />
       </article>
 
       {related.length > 0 && (

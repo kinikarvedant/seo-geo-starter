@@ -52,15 +52,51 @@ export function Markdown({ content }: { content: string }) {
   );
 }
 
-/** Bold only. Anything richer belongs in MDX, not in a config string. */
+/**
+ * Bold, links and inline code.
+ *
+ * The set is small on purpose, but it must match `toPlainText` exactly: that function
+ * flattens the same string for JSON-LD, so anything it strips and this does not render
+ * shows up as raw syntax on the page while reading clean in the structured data. Links
+ * are here because that mismatch is not hypothetical — `[our fees](/fees)` rendered
+ * literally while the FAQ markup said "our fees".
+ */
+const INLINE = /(\*\*[^*]+\*\*|\[[^\]]+\]\([^)]+\)|`[^`]+`)/g;
+
 function inline(text: string): (string | JSX.Element)[] {
-  return text.split(/(\*\*[^*]+\*\*)/g).map((part, i) =>
-    part.startsWith("**") && part.endsWith("**") ? (
-      <strong key={i} className="font-semibold text-slate-900">
-        {part.slice(2, -2)}
-      </strong>
-    ) : (
-      part
-    ),
-  );
+  return text.split(INLINE).map((part, i) => {
+    if (part.startsWith("**") && part.endsWith("**")) {
+      return (
+        <strong key={i} className="font-semibold text-slate-900">
+          {part.slice(2, -2)}
+        </strong>
+      );
+    }
+
+    if (part.startsWith("`") && part.endsWith("`") && part.length > 1) {
+      return (
+        <code key={i} className="rounded bg-slate-100 px-1 py-0.5 text-[0.9em]">
+          {part.slice(1, -1)}
+        </code>
+      );
+    }
+
+    const link = /^\[([^\]]+)\]\(([^)]+)\)$/.exec(part);
+    if (link) {
+      const [, label, href] = link;
+      const external = /^https?:\/\//.test(href);
+      return (
+        <a
+          key={i}
+          href={href}
+          className="text-brand-700 underline underline-offset-2"
+          {...(external ? { rel: "noopener", target: "_blank" } : {})}
+        >
+          {label}
+        </a>
+      );
+    }
+
+    return part;
+  });
 }

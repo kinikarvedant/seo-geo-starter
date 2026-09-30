@@ -7,6 +7,8 @@ import { client } from "@/config/load";
 import { hrefs } from "@/lib/linking/hrefs";
 import { buildMetadata } from "@/lib/seo/metadata";
 import { areaServiceRoutes } from "@/lib/seo/routes";
+import { JsonLd } from "@/components/seo/JsonLd";
+import { serviceJsonLd } from "@/lib/seo/jsonld/content";
 
 export const dynamic = "force-static";
 /**
@@ -64,6 +66,13 @@ export default async function AreaServicePage({ params }: PageProps<"/areas/[are
           { label: area.name, href: hrefs.area(area.slug) },
           { label: service.name, href: hrefs.areaService(area.slug, service.slug) },
         ]}
+      />
+
+      {/* areaServed narrowed to this suburb: the page is about this service here, and
+          a node claiming every area would contradict the page it sits on. */}
+      <JsonLd
+        id={`service-${area.slug}-${service.slug}`}
+        data={serviceJsonLd(client, service, { areaSlug: area.slug })}
       />
 
       <article>

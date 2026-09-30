@@ -12,9 +12,10 @@ for three things at once:
 One source tree builds every client. `CLIENT_ID=cafe npm run build` produces a different
 site — different routes, sitemap, structured data, brand and copy — from the same code.
 
-> **Status: milestone 1 of 10.** Config layer, theme derivation and container shape are
-> in place. Routing, metadata, JSON-LD, AEO components, the GEO layer and the audit
-> script land in later milestones. This README grows with them.
+> **Status: milestones 1–4 of 10.** Config layer, theme, container shape, the route
+> inventory, every page type, metadata, sitemap, robots with AI-crawler policy, and the
+> structured-data layer are in place. Still to come: `llms.txt`, the contact form, the
+> blog/content layer, the performance pass and the full audit script.
 
 ## Why it is built this way
 
@@ -40,9 +41,46 @@ forces `noindex` and renders a banner: fabricated business names, addresses and 
 numbers should not enter the local search index, where they can be matched against real
 listings.
 
+**One route inventory.** `allRoutes()` is the only thing that enumerates URLs. Page
+generation, metadata, the sitemap and the endpoint tests all read from it, so the
+sitemap cannot advertise a page that 404s, and a page cannot exist that the sitemap
+never mentions. Drift between those is the most common finding in a technical SEO audit.
+
+**One entity, referenced everywhere.** Organization, LocalBusiness and WebSite are
+declared once in the root layout with stable `@id`s; every page-level node points at
+them by reference instead of repeating the business. Without that, a crawler sees a
+different anonymous business on every page rather than one entity — which matters more
+for LLM citation than for classic ranking.
+
+**FAQ copy and FAQ markup cannot drift.** `FAQSection` renders the questions and emits
+the `FAQPage` JSON-LD from the same array in the same pass, an ESLint rule stops any
+other file importing the generator, and a test compares the questions in the served
+HTML against the questions in the served markup.
+
 **No `aggregateRating`.** Self-serving review markup on your own site is against Google's
 structured data policy and risks a manual action, so `trust.reviews.emitSchema` is typed
-as literal `false`.
+as literal `false`, the validator rejects the property on the raw node, and the endpoint
+tests assert it never appears in any served page.
+
+## AI crawler policy
+
+`robots.ts` writes per-bot rules from `client.ai`. The presets are organised by
+_purpose_, not by vendor, because the distinction that matters is whether a crawler
+trains on your content or retrieves it to cite you in an answer:
+
+| Preset           | Training crawlers | Retrieval / user-fetch |
+| ---------------- | ----------------- | ---------------------- |
+| `open` (default) | allowed           | allowed                |
+| `search-only`    | blocked           | allowed                |
+| `closed`         | blocked           | blocked                |
+
+Two things worth knowing, because both are commonly got wrong:
+
+- **`Google-Extended` does not affect Google Search or AI Overviews.** It governs Gemini
+  training and grounding only. AI Overviews draw on the normal Search index.
+- **`Disallow` is not `noindex`.** A blocked page can still be indexed from inbound
+  links, and because the crawler never fetches it, it never sees a `noindex` either.
+  That is why demo sites here keep robots.txt open and use a meta robots tag.
 
 ## Demo clients
 

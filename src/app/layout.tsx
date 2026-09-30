@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { client } from "@/config/load";
 import { themeCss } from "@/lib/theme/cssVars";
 import { DemoBanner } from "@/components/layout/DemoBanner";
+import { JsonLd } from "@/components/seo/JsonLd";
+import { siteGraphJsonLd } from "@/lib/seo/jsonld/graph";
 import "./globals.css";
 
 /**
@@ -49,6 +51,9 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       <head>
         {/* Inline so the brand is applied before first paint — no FOUC, no extra request. */}
         <style id="brand-theme" dangerouslySetInnerHTML={{ __html: themeCss(client.brand) }} />
+        {/* Organization, LocalBusiness and WebSite, declared once for the whole site.
+            Page-level nodes reference these by @id rather than repeating them. */}
+        <JsonLd id="site" data={siteGraphJsonLd(client)} />
       </head>
       <body className="bg-white text-slate-800 antialiased">
         <DemoBanner />
