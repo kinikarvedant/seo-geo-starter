@@ -9,6 +9,7 @@ import { buildMetadata } from "@/lib/seo/metadata";
 import { areaServiceRoutes } from "@/lib/seo/routes";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { serviceJsonLd } from "@/lib/seo/jsonld/content";
+import { KeyFacts } from "@/components/aeo/KeyFacts";
 
 export const dynamic = "force-static";
 /**
@@ -89,28 +90,17 @@ export default async function AreaServicePage({ params }: PageProps<"/areas/[are
           {intro}
         </p>
 
+        {/* Not an AnswerBlock: the area-specific intro above is this page's one
+            quotable answer, and a second marked block would compete with it for the
+            passage an extractor lifts. */}
         <section aria-labelledby="about-service" className="mt-10">
           <h2 id="about-service" className="text-xl font-semibold text-slate-900">
-            About {service.name.toLowerCase()}
+            What does {service.name.toLowerCase()} involve?
           </h2>
           <p className="mt-3 text-slate-700">{service.answer}</p>
         </section>
 
-        {service.keyFacts.length > 0 && (
-          <section aria-labelledby="key-facts" className="mt-10">
-            <h2 id="key-facts" className="text-xl font-semibold text-slate-900">
-              The essentials
-            </h2>
-            <dl className="mt-3 divide-y divide-slate-200 border-y border-slate-200">
-              {service.keyFacts.map((fact) => (
-                <div key={fact.label} className="flex flex-wrap gap-x-4 py-2 text-sm">
-                  <dt className="w-48 shrink-0 font-medium text-slate-900">{fact.label}</dt>
-                  <dd className="text-slate-600">{fact.value}</dd>
-                </div>
-              ))}
-            </dl>
-          </section>
-        )}
+        <KeyFacts facts={service.keyFacts} heading="The essentials" headingId="key-facts" />
 
         <section aria-labelledby="detail" className="mt-10">
           <h2 id="detail" className="text-xl font-semibold text-slate-900">

@@ -6,6 +6,7 @@ import { client } from "@/config/load";
 import { allRoutes } from "@/lib/seo/routes";
 import { validateJsonLdBlob } from "@/lib/seo/jsonld/validators";
 import { resolveAiRules } from "@/lib/geo/aiCrawlers";
+import { renderLlmsFullTxt, renderLlmsTxt } from "@/lib/geo/llms";
 
 /**
  * Endpoint smoke test against a real running build.
@@ -298,5 +299,72 @@ describe(`sitemap and robots (${client.id})`, () => {
     const body = await (await fetch(`${BASE}/robots.txt`)).text();
     const wildcard = body.split(/User-Agent:/i)[1] ?? "";
     expect(wildcard).not.toMatch(/Disallow:\s*\/\s*$/m);
+  });
+});
+
+describe(`GEO files (${client.id})`, () => {
+  it("serves llms.txt as plain text, matching what the generator produces", async () => {
+    const res = await fetch(`${BASE}/llms.txt`);
+    expect(res.status).toBe(200);
+    expect(res.headers.get("content-type")).toContain("text/plain");
+    await expect(res.text()).resolves.toBe(renderLlmsTxt(client));
+  });
+
+  it("serves llms-full.txt", async () => {
+    const res = await fetch(`${BASE}/llms-full.txt`);
+    expect(res.status).toBe(200);
+    expect(res.headers.get("content-type")).toContain("text/plain");
+    await expect(res.text()).resolves.toBe(renderLlmsFullTxt(client));
+  });
+
+  it("only links pages from llms.txt that actually return 200", async () => {
+    // The generator builds from the route inventory, but this proves it end to end:
+    // a document advertising a dead URL to an assistant is worse than none.
+    const body = await (await fetch(`${BASE}/llms.txt`)).text();
+    const paths = [...body.matchAll(new RegExp(`${client.site.url}([^\\s)\\]]*)`, "g"))]
+      .map((m) => m[1] || "/")
+      .filter((p) => !p.endsWith(".xml"));
+
+    expect(paths.length).toBeGreaterThan(0);
+
+    for (const path of new Set(paths)) {
+      const res = await fetch(`${BASE}${path}`);
+      expect(res.status, `llms.txt links ${path}`).toBe(200);
+    }
+  });
+
+  it("states that a demo business is fictional", async () => {
+    if (!client.demo) return;
+    const body = await (await fetch(`${BASE}/llms.txt`)).text();
+    expect(body).toContain("fictional business");
+  });
+});
+
+describe(`answer-first structure (${client.id})`, () => {
+  it("gives every service and area page exactly one answer block", async () => {
+    // The AEO claim, checked rather than asserted: these are the pages meant to be
+    // quotable, and an extractor takes the first direct answer it finds.
+    const pages = routes.filter(
+      (r) => r.kind === "service" || r.kind === "area" || r.kind === "areaService",
+    );
+    expect(pages.length).toBeGreaterThan(0);
+
+    for (const route of pages) {
+      const html = await (await fetch(`${BASE}${route.path}`)).text();
+      const blocks = (html.match(/data-aeo="answer"/g) ?? []).length;
+      expect(blocks, `${route.path} has ${blocks} answer blocks`).toBe(1);
+    }
+  });
+
+  it("puts real text in the answer block, not a placeholder", async () => {
+    for (const route of routes.filter((r) => r.kind === "service")) {
+      const html = await (await fetch(`${BASE}${route.path}`)).text();
+      const text = (/<[^>]*data-aeo="answer"[^>]*>([\s\S]*?)<\/[a-z]+>/.exec(html)?.[1] ?? "")
+        .replace(/<[^>]*>/g, " ")
+        .replace(/\s+/g, " ")
+        .trim();
+      const words = text.split(/\s+/).filter(Boolean).length;
+      expect(words, `${route.path} answer is ${words} words`).toBeGreaterThanOrEqual(25);
+    }
   });
 });

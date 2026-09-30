@@ -9,6 +9,8 @@ import { hrefs } from "@/lib/linking/hrefs";
 import { buildMetadata } from "@/lib/seo/metadata";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { FAQSection } from "@/components/aeo/FAQSection";
+import { KeyFacts } from "@/components/aeo/KeyFacts";
+import { AnswerBlock } from "@/components/aeo/AnswerBlock";
 import { serviceJsonLd } from "@/lib/seo/jsonld/content";
 import { absoluteUrl } from "@/lib/linking/hrefs";
 
@@ -70,14 +72,11 @@ export default async function ServiceDetail({ params }: PageProps<"/services/[se
       <article>
         <h1 className="text-3xl font-bold text-slate-900 sm:text-4xl">{service.name}</h1>
 
-        {/* The answer-first block: the passage most likely to be lifted into a snippet
-            or an AI answer, so it leads the page and is marked for the audit. */}
-        <p
-          data-aeo="answer"
-          className="rounded-brand border-brand-500 bg-brand-50/60 mt-6 border-l-4 p-5 text-lg leading-relaxed text-slate-800"
-        >
-          {service.answer}
-        </p>
+        <AnswerBlock
+          id="what-it-involves"
+          question={`What does ${service.name.toLowerCase()} involve?`}
+          answer={service.answer}
+        />
 
         {service.priceFrom && (
           <p className="mt-4 text-slate-700">
@@ -90,23 +89,7 @@ export default async function ServiceDetail({ params }: PageProps<"/services/[se
           </p>
         )}
 
-        {service.keyFacts.length > 0 && (
-          <section aria-labelledby="key-facts" className="mt-8">
-            <h2 id="key-facts" className="text-xl font-semibold text-slate-900">
-              At a glance
-            </h2>
-            <dl className="rounded-brand mt-3 divide-y divide-slate-200 border border-slate-200">
-              {service.keyFacts.map((fact) => (
-                <div key={fact.label} className="gap-1 p-4 sm:flex sm:gap-4">
-                  <dt className="text-sm font-semibold text-slate-500 sm:w-40 sm:shrink-0">
-                    {fact.label}
-                  </dt>
-                  <dd className="text-slate-800">{fact.value}</dd>
-                </div>
-              ))}
-            </dl>
-          </section>
-        )}
+        <KeyFacts facts={service.keyFacts} heading="At a glance" headingId="key-facts" />
 
         <div className="mt-8">
           <Markdown content={service.body} />
