@@ -4,16 +4,16 @@ A config-driven Next.js template for launching agency client sites that are opti
 for three things at once:
 
 - **SEO** — conventional search ranking: metadata, canonicals, sitemaps, internal linking
-- **AEO** — answer engines: featured snippets, AI Overviews and voice answers, which need
+- **AEO** — answer engines: featured snippets, search overviews and voice answers, which need
   answer-first content structure and valid structured data
-- **GEO** — being cited by LLM assistants: `llms.txt`, per-bot crawler policy, and facts
+- **GEO** — being cited by chat assistants: `llms.txt`, per-bot crawler policy, and facts
   that survive being read without JavaScript
 
 One source tree builds every client. `CLIENT_ID=cafe npm run build` produces a different
 site — different routes, sitemap, structured data, brand and copy — from the same code.
 
 > **Status: milestones 1–6 of 10.** Config layer, theme, container shape, the route
-> inventory, every page type, metadata, sitemap, robots with AI-crawler policy, the
+> inventory, every page type, metadata, sitemap, robots with per-crawler policy, the
 > structured-data layer, the answer-first components (`AnswerBlock`, `KeyFacts`) and
 > `llms.txt` / `llms-full.txt` are in place. Still to come: the contact form, the
 > blog/content layer, the performance pass and the full audit script.
@@ -51,7 +51,7 @@ never mentions. Drift between those is the most common finding in a technical SE
 declared once in the root layout with stable `@id`s; every page-level node points at
 them by reference instead of repeating the business. Without that, a crawler sees a
 different anonymous business on every page rather than one entity — which matters more
-for LLM citation than for classic ranking.
+for assistant citation than for classic ranking.
 
 **FAQ copy and FAQ markup cannot drift.** `FAQSection` renders the questions and emits
 the `FAQPage` JSON-LD from the same array in the same pass, an ESLint rule stops any
@@ -63,9 +63,9 @@ structured data policy and risks a manual action, so `trust.reviews.emitSchema` 
 as literal `false`, the validator rejects the property on the raw node, and the endpoint
 tests assert it never appears in any served page.
 
-## AI crawler policy
+## Answer-engine crawler policy
 
-`robots.ts` writes per-bot rules from `client.ai`. The presets are organised by
+`robots.ts` writes per-bot rules from `client.answerEngines`. The presets are organised by
 _purpose_, not by vendor, because the distinction that matters is whether a crawler
 trains on your content or retrieves it to cite you in an answer:
 
@@ -77,8 +77,9 @@ trains on your content or retrieves it to cite you in an answer:
 
 Two things worth knowing, because both are commonly got wrong:
 
-- **`Google-Extended` does not affect Google Search or AI Overviews.** It governs Gemini
-  training and grounding only. AI Overviews draw on the normal Search index.
+- **`Google-Extended` does not affect Google Search or its search overviews.** It
+  governs training and grounding for Google's models only. The overviews draw on the
+  normal Search index.
 - **`Disallow` is not `noindex`.** A blocked page can still be indexed from inbound
   links, and because the crawler never fetches it, it never sees a `noindex` either.
   That is why demo sites here keep robots.txt open and use a meta robots tag.

@@ -56,7 +56,7 @@ describe("clientConfigSchema", () => {
 
     expect(result.data.demo).toBe(false);
     expect(result.data.site.locale).toBe("en-AU");
-    expect(result.data.ai.preset).toBe("open");
+    expect(result.data.answerEngines.preset).toBe("open");
     expect(result.data.services[0].areaPages.enabled).toBe(false);
     expect(result.data.serviceAreas[0].priority).toBe(5);
   });

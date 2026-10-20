@@ -89,7 +89,7 @@ const serviceSchema = z.object({
   shortDescription: z.string().min(70).max(160),
   /**
    * The answer-first block: a direct 40–60 word answer rendered as the first paragraph.
-   * This is the text most likely to be lifted into a featured snippet or an AI answer.
+   * This is the text most likely to be lifted into a featured snippet or a generated answer.
    */
   answer: z.string().min(120).max(420),
   body: z.string().min(200),
@@ -214,10 +214,10 @@ export const clientConfigSchema = z
       })
       .prefault({}),
 
-    ai: z
+    answerEngines: z
       .object({
         /**
-         * open        — every AI crawler allowed (default; being cited is the point)
+         * open        — every known crawler allowed (default; being cited is the point)
          * search-only — retrieval/citation bots allowed, training crawlers denied
          * closed      — all denied
          */

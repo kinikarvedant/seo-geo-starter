@@ -1,10 +1,10 @@
 import type { MetadataRoute } from "next";
 import { client } from "@/config/load";
 import { absoluteUrl } from "@/lib/linking/hrefs";
-import { resolveAiRules } from "@/lib/geo/aiCrawlers";
+import { resolveCrawlerRules } from "@/lib/geo/crawlerPolicy";
 
 /**
- * robots.txt, including per-bot AI crawler policy from config.
+ * robots.txt, including per-bot crawler policy from config.
  *
  * Two things worth knowing, because both are widely got wrong:
  *
@@ -26,7 +26,7 @@ export default function robots(): MetadataRoute.Robots {
         // Not a page, and nothing here for a crawler.
         disallow: "/api/",
       },
-      ...resolveAiRules(client.ai),
+      ...resolveCrawlerRules(client.answerEngines),
     ],
     sitemap: absoluteUrl(client.site.url, "/sitemap.xml"),
     host: new URL(client.site.url).host,

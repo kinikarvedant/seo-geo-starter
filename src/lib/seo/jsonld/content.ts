@@ -68,7 +68,7 @@ export function serviceJsonLd(
  *
  * Note on expectations: Google restricted FAQ rich results to authoritative government
  * and health sites in 2023, so this will not generally produce the expandable snippet
- * any more. It is still worth emitting — answer-extraction for AI answers and voice
+ * any more. It is still worth emitting — answer-extraction for generated answers and voice
  * reads it — but the README must not promise rich results.
  */
 export function faqPageJsonLd(faqs: readonly Faq[], pageUrl: string) {

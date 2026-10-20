@@ -1,5 +1,5 @@
 import { client } from "@/config/load";
-import { renderLlmsTxt } from "@/lib/geo/llms";
+import { renderLlmsTxt } from "@/lib/geo/llmsTxt";
 
 /**
  * Route handlers are dynamic by default in Next 16, so this is opted back into static

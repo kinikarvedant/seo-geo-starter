@@ -528,7 +528,7 @@ Neighbours on three sides means amplified music stops at 10pm and everyone is ou
     consentMode: "advanced",
   },
 
-  ai: {
+  answerEngines: {
     preset: "open",
   },
 

@@ -7,7 +7,7 @@ import { formatHours } from "@/lib/util/hours";
  * Footer, and the site's NAP block.
  *
  * Name, address and phone are rendered from config in one place and repeated nowhere
- * by hand. Entity consistency is what lets search engines and LLMs decide that this
+ * by hand. Entity consistency is what lets search engines and assistants decide that this
  * site, the Google Business Profile and a directory listing are the same business — a
  * mistyped suburb in a hand-written footer quietly breaks that.
  */

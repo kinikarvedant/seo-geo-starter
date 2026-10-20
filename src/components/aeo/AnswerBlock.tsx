@@ -4,7 +4,7 @@ import type { JSX } from "react";
  * A question as a heading, then a direct answer as the first paragraph.
  *
  * This is the whole of answer-engine optimisation in one component. Featured snippets,
- * AI Overviews and voice answers all work by lifting a short passage that answers a
+ * search overviews and voice answers all work by lifting a short passage that answers a
  * question *without* the surrounding page for context. A page that opens with "At
  * Bridge Road Dental we pride ourselves on…" gives an extractor nothing to take; one
  * that opens with the answer gives it something quotable.

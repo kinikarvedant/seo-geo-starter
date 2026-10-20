@@ -1,5 +1,5 @@
 import { client } from "@/config/load";
-import { renderLlmsFullTxt } from "@/lib/geo/llms";
+import { renderLlmsFullTxt } from "@/lib/geo/llmsTxt";
 
 export const dynamic = "force-static";
 

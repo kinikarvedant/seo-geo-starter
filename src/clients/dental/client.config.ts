@@ -5,7 +5,7 @@ import type { ClientConfigInput } from "@/config/schema";
  *
  * Fictional. `demo: true` keeps every page noindexed — fake local-business data must
  * not reach the search index. The prose is written to be answer-first, because the
- * service pages exist to be quoted by a featured snippet or an AI answer.
+ * service pages exist to be quoted by a featured snippet or a generated answer.
  */
 export const dental: ClientConfigInput = {
   id: "dental",
@@ -67,7 +67,7 @@ export const dental: ClientConfigInput = {
     logoText: "Bridge Road Dental",
   },
 
-  ai: { preset: "open" },
+  answerEngines: { preset: "open" },
 
   trust: {
     reviews: {

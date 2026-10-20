@@ -9,7 +9,7 @@ import { absoluteUrl } from "@/lib/linking/hrefs";
  * organisation — it sees twenty businesses that happen to share a name. With stable
  * `@id`s, the business is defined once and every other node references it by id.
  *
- * That matters more for GEO than for classic SEO: entity resolution is how an LLM
+ * That matters more for GEO than for classic SEO: entity resolution is how an assistant
  * decides that this site, a directory listing and a Google Business Profile are one
  * business worth citing by name.
  */

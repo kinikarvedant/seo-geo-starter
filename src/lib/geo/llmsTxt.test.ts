@@ -4,7 +4,7 @@ import { registry, clientIds } from "@/clients/registry";
 import { allRoutes } from "@/lib/seo/routes";
 import { absoluteUrl } from "@/lib/linking/hrefs";
 import { toPlainText } from "@/lib/text/plain";
-import { renderLlmsFullTxt, renderLlmsTxt } from "./llms";
+import { renderLlmsFullTxt, renderLlmsTxt } from "./llmsTxt";
 
 const configs = clientIds.map((id) => ({ id, config: clientConfigSchema.parse(registry[id]) }));
 
@@ -101,7 +101,9 @@ describe.each(configs)("llms-full.txt: $id", ({ config }) => {
   });
 
   it("stays inside the configured byte ceiling", () => {
-    expect(Buffer.byteLength(doc, "utf8")).toBeLessThanOrEqual(config.ai.llmsFullMaxBytes);
+    expect(Buffer.byteLength(doc, "utf8")).toBeLessThanOrEqual(
+      config.answerEngines.llmsFullMaxBytes,
+    );
   });
 
   it("is deterministic", () => {
@@ -112,7 +114,7 @@ describe.each(configs)("llms-full.txt: $id", ({ config }) => {
 describe("llms-full.txt truncation", () => {
   const config = clientConfigSchema.parse({
     ...registry.plumber,
-    ai: { preset: "open", overrides: {}, llmsFullMaxBytes: 2_000 },
+    answerEngines: { preset: "open", overrides: {}, llmsFullMaxBytes: 2_000 },
   });
 
   it("says where it stopped rather than cutting silently", () => {

@@ -3,7 +3,7 @@ import { absoluteUrl } from "@/lib/linking/hrefs";
 import { allRoutes } from "@/lib/seo/routes";
 import { formatHours } from "@/lib/util/hours";
 import { toPlainText } from "@/lib/text/plain";
-import { describeAiPolicy } from "./aiCrawlers";
+import { describeCrawlerPolicy } from "./crawlerPolicy";
 
 /**
  * `/llms.txt` — a plain-text summary of what this site is and what it contains, for
@@ -13,7 +13,7 @@ import { describeAiPolicy } from "./aiCrawlers";
  * reading it. It is cheap, it is generated from the same inventory the pages come from
  * so it cannot describe a page that does not exist, and the discipline of writing one
  * forces the facts a business most wants quoted into one extractable place. Those are
- * the honest reasons to ship it; "LLMs will read this" is not a promise anyone can make
+ * the honest reasons to ship it; "assistants will read this" is not a promise anyone can make
  * yet, and the README says so.
  */
 function nap(c: ClientConfig): string[] {
@@ -83,7 +83,7 @@ export function renderLlmsTxt(c: ClientConfig): string {
   lines.push(
     "## Crawler policy",
     "",
-    ...describeAiPolicy(c.ai).map((line) => `- ${line}`),
+    ...describeCrawlerPolicy(c.answerEngines).map((line) => `- ${line}`),
     "",
     "## Full text",
     "",
@@ -163,7 +163,7 @@ export function renderLlmsFullTxt(c: ClientConfig): string {
   }
 
   const body = lines.join("\n");
-  const limit = c.ai.llmsFullMaxBytes;
+  const limit = c.answerEngines.llmsFullMaxBytes;
 
   if (Buffer.byteLength(body, "utf8") <= limit) return body;
 

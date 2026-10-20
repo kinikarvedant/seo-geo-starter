@@ -5,8 +5,8 @@ import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { client } from "@/config/load";
 import { allRoutes } from "@/lib/seo/routes";
 import { validateJsonLdBlob } from "@/lib/seo/jsonld/validators";
-import { resolveAiRules } from "@/lib/geo/aiCrawlers";
-import { renderLlmsFullTxt, renderLlmsTxt } from "@/lib/geo/llms";
+import { resolveCrawlerRules } from "@/lib/geo/crawlerPolicy";
+import { renderLlmsFullTxt, renderLlmsTxt } from "@/lib/geo/llmsTxt";
 
 /**
  * Endpoint smoke test against a real running build.
@@ -278,14 +278,14 @@ describe(`sitemap and robots (${client.id})`, () => {
     expect(urls.sort()).toEqual(expected.sort());
   });
 
-  it("serves robots.txt with the sitemap and the configured AI crawler policy", async () => {
+  it("serves robots.txt with the sitemap and the configured crawler policy", async () => {
     const res = await fetch(`${BASE}/robots.txt`);
     expect(res.status).toBe(200);
 
     const body = await res.text();
     expect(body).toContain(`Sitemap: ${client.site.url}/sitemap.xml`);
 
-    for (const rule of resolveAiRules(client.ai)) {
+    for (const rule of resolveCrawlerRules(client.answerEngines)) {
       expect(body, `${rule.userAgent} missing from robots.txt`).toContain(
         `User-Agent: ${rule.userAgent}`,
       );
