@@ -12,9 +12,10 @@ for three things at once:
 One source tree builds every client. `CLIENT_ID=cafe npm run build` produces a different
 site — different routes, sitemap, structured data, brand and copy — from the same code.
 
-> **Status: milestones 1–4 of 10.** Config layer, theme, container shape, the route
-> inventory, every page type, metadata, sitemap, robots with AI-crawler policy, and the
-> structured-data layer are in place. Still to come: `llms.txt`, the contact form, the
+> **Status: milestones 1–6 of 10.** Config layer, theme, container shape, the route
+> inventory, every page type, metadata, sitemap, robots with AI-crawler policy, the
+> structured-data layer, the answer-first components (`AnswerBlock`, `KeyFacts`) and
+> `llms.txt` / `llms-full.txt` are in place. Still to come: the contact form, the
 > blog/content layer, the performance pass and the full audit script.
 
 ## Why it is built this way
