@@ -12,6 +12,11 @@ for three things at once:
 One source tree builds every client. `CLIENT_ID=cafe npm run build` produces a different
 site — different routes, sitemap, structured data, brand and copy — from the same code.
 
+**Live demos:** [dental clinic](https://vedantkinikar.duckdns.org/demos/dental),
+[coffee roaster](https://vedantkinikar.duckdns.org/demos/cafe) and
+[plumber](https://vedantkinikar.duckdns.org/demos/plumber), three fictional businesses
+built from config alone (see [Demo clients](#demo-clients)).
+
 > **Status: milestones 1–6 of 10.** Config layer, theme, container shape, the route
 > inventory, every page type, metadata, sitemap, robots with per-crawler policy, the
 > structured-data layer, the answer-first components (`AnswerBlock`, `KeyFacts`) and
@@ -40,7 +45,9 @@ expressed.
 **Demo sites are marked as demos.** The three showcase clients are fictional. `demo: true`
 forces `noindex` and renders a banner: fabricated business names, addresses and phone
 numbers should not enter the local search index, where they can be matched against real
-listings.
+listings. The phone numbers come from the range ACMA reserves for fiction ((03) 5550 xxxx),
+addresses name a street but no building, and email addresses use `example.com`, so nothing
+on a demo reaches a real person.
 
 **One route inventory.** `allRoutes()` is the only thing that enumerates URLs. Page
 generation, metadata, the sitemap and the endpoint tests all read from it, so the
@@ -86,11 +93,16 @@ Two things worth knowing, because both are commonly got wrong:
 
 ## Demo clients
 
-| Client    | Business                       | Origin                          |
-| --------- | ------------------------------ | ------------------------------- |
-| `dental`  | Dental clinic, Richmond VIC    | `bridgeroaddental.duckdns.org`  |
-| `cafe`    | Specialty roaster, Fitzroy VIC | `fitzroyroasters.duckdns.org`   |
-| `plumber` | 24/7 plumber, Northcote VIC    | `northcoteplumbing.duckdns.org` |
+| Client    | Business                       | Hosted at                                                                                  |
+| --------- | ------------------------------ | ------------------------------------------------------------------------------------------ |
+| `dental`  | Dental clinic, Richmond VIC    | [vedantkinikar.duckdns.org/demos/dental](https://vedantkinikar.duckdns.org/demos/dental)   |
+| `cafe`    | Specialty roaster, Fitzroy VIC | [vedantkinikar.duckdns.org/demos/cafe](https://vedantkinikar.duckdns.org/demos/cafe)       |
+| `plumber` | 24/7 plumber, Northcote VIC    | [vedantkinikar.duckdns.org/demos/plumber](https://vedantkinikar.duckdns.org/demos/plumber) |
+
+The demos share one origin, each under its own path (`BASE_PATH`, below), so their
+`robots.txt`, `sitemap.xml` and `llms.txt` sit at `/demos/<client>/…` rather than at an
+origin root where crawlers look for them. They can be opened there, but a real client
+site gets its own origin.
 
 ## Getting started
 
@@ -103,13 +115,21 @@ npm run verify                    # lint + typecheck + tests
 Build a specific client, the way CI and Docker do:
 
 ```bash
-CLIENT_ID=cafe NEXT_PUBLIC_SITE_URL=https://fitzroyroasters.duckdns.org npm run build
+CLIENT_ID=cafe NEXT_PUBLIC_SITE_URL=https://cafe.example.com npm run build
 ```
 
 ```bash
 docker build --build-arg CLIENT_ID=cafe \
-  --build-arg NEXT_PUBLIC_SITE_URL=https://fitzroyroasters.duckdns.org \
+  --build-arg NEXT_PUBLIC_SITE_URL=https://cafe.example.com \
   -t seo-starter:cafe .
+```
+
+To serve a client under a path, as the hosted demos are, add `BASE_PATH` and include the
+path in the site URL. The smoke test reads the same variables:
+
+```bash
+CLIENT_ID=cafe BASE_PATH=/demos/cafe \
+  NEXT_PUBLIC_SITE_URL=https://vedantkinikar.duckdns.org/demos/cafe npm run build
 ```
 
 ## Stack

@@ -19,28 +19,28 @@ export const cafe: ClientConfigInput = {
   foundedYear: 2014,
 
   site: {
-    url: "https://fitzroyroasters.duckdns.org",
+    url: "https://vedantkinikar.duckdns.org/demos/cafe",
     locale: "en-AU",
     timezone: "Australia/Melbourne",
     titleTemplate: "%s | Fitzroy Ember Coffee Roasters",
   },
 
   contact: {
-    phone: "+61390240188",
-    phoneDisplay: "(03) 9024 0188",
-    email: "hello@fitzroyroasters.duckdns.org",
-    bookingUrl: "https://fitzroyroasters.duckdns.org/bookings",
+    phone: "+61355500188",
+    phoneDisplay: "(03) 5550 0188",
+    email: "hello@example.com",
+    bookingUrl: "https://vedantkinikar.duckdns.org/demos/cafe/contact",
     emergency: false,
   },
 
   address: {
-    streetAddress: "214 Gertrude Street",
+    streetAddress: "Gertrude Street",
     suburb: "Fitzroy",
     state: "VIC",
     postcode: "3065",
     country: "AU",
     geo: { lat: -37.8012, lng: 144.9795 },
-    mapUrl: "https://maps.google.com/?q=214+Gertrude+Street+Fitzroy+VIC+3065",
+    mapUrl: "https://maps.google.com/?q=Gertrude+Street+Fitzroy+VIC+3065",
   },
 
   hours: {
@@ -179,7 +179,7 @@ Forty-eight seats inside a narrow Victorian shopfront, plus sixteen in the back 
       name: "Specialty coffee and single-origin roasts",
       category: "coffee",
       shortDescription:
-        "Drum-roasted behind glass at 214 Gertrude Street and cupped the next morning, then poured over the counter or bagged to take home.",
+        "Drum-roasted behind glass on Gertrude Street and cupped the next morning, then poured over the counter or bagged to take home.",
       answer:
         "Yes — every coffee we serve is roasted out the back on a 15kg Probat drum roaster. There is one espresso blend on the main grinder, a decaf on the second, and two single origins rotating through filter each week. Retail bags carry a roast date, and we grind to order.",
       body: `## The roastery

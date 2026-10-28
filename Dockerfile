@@ -15,8 +15,11 @@ FROM node:24-bookworm-slim AS builder
 WORKDIR /app
 ARG CLIENT_ID=dental
 ARG NEXT_PUBLIC_SITE_URL
+# Optional: serve under a path such as /demos/dental (see next.config.ts).
+ARG BASE_PATH=
 ENV CLIENT_ID=$CLIENT_ID \
     NEXT_PUBLIC_SITE_URL=$NEXT_PUBLIC_SITE_URL \
+    BASE_PATH=$BASE_PATH \
     NEXT_TELEMETRY_DISABLED=1
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
@@ -31,8 +34,10 @@ WORKDIR /app
 # container. Unset, it silently falls back to the default client — so the cafe image
 # would serve the dental clinic's phone number from any on-demand route.
 ARG CLIENT_ID=dental
+ARG BASE_PATH=
 ENV NODE_ENV=production \
     CLIENT_ID=$CLIENT_ID \
+    BASE_PATH=$BASE_PATH \
     PORT=3000 \
     HOSTNAME=0.0.0.0 \
     NEXT_TELEMETRY_DISABLED=1
@@ -52,6 +57,6 @@ USER nextjs
 EXPOSE 3000
 
 HEALTHCHECK --interval=30s --timeout=3s --start-period=10s --retries=3 \
-  CMD node -e "fetch('http://127.0.0.1:3000/api/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"
+  CMD node -e "fetch('http://127.0.0.1:3000' + (process.env.BASE_PATH || '') + '/api/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"
 
 CMD ["node", "server.js"]

@@ -20,20 +20,20 @@ export const plumber: ClientConfigInput = {
   foundedYear: 2009,
 
   site: {
-    url: "https://northcoteplumbing.duckdns.org",
+    url: "https://vedantkinikar.duckdns.org/demos/plumber",
     titleTemplate: "%s | Merri Creek Plumbing & Gas",
   },
 
   contact: {
-    phone: "+61390428817",
-    phoneDisplay: "(03) 9042 8817",
-    email: "service@northcoteplumbing.duckdns.org",
-    bookingUrl: "https://northcoteplumbing.duckdns.org/contact",
+    phone: "+61355508817",
+    phoneDisplay: "(03) 5550 8817",
+    email: "service@example.com",
+    bookingUrl: "https://vedantkinikar.duckdns.org/demos/plumber/contact",
     emergency: true,
   },
 
   address: {
-    streetAddress: "14 Separation Street",
+    streetAddress: "Separation Street",
     suburb: "Northcote",
     state: "VIC",
     postcode: "3070",
@@ -126,7 +126,7 @@ export const plumber: ClientConfigInput = {
       shortDescription:
         "Emergency plumber on call 24 hours across Melbourne's inner north, on site in about an hour for a fixed callout fee.",
       answer:
-        "Call Merri Creek Plumbing & Gas on (03) 9042 8817 at any hour — a licensed plumber answers, not a call centre, and we are usually on site anywhere in Melbourne's inner north within 60 minutes. Burst pipes, sewer overflows, gas leaks and total hot water failures are made safe on the first visit.",
+        "Call Merri Creek Plumbing & Gas on (03) 5550 8817 at any hour — a licensed plumber answers, not a call centre, and we are usually on site anywhere in Melbourne's inner north within 60 minutes. Burst pipes, sewer overflows, gas leaks and total hot water failures are made safe on the first visit.",
       body: `## What happens when you ring
 
 The phone goes to a plumber on shift, not a message service. We triage before we leave — where the water is coming from, whether you can reach the meter, whether anything electrical is wet — because two minutes of advice often stops most of the damage before we arrive. If it is safe, we will talk you through shutting the water off at the meter on the front boundary, or isolating one fixture at its stop tap so the rest of the house keeps working.

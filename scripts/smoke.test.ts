@@ -24,7 +24,8 @@ import { renderLlmsFullTxt, renderLlmsTxt } from "@/lib/geo/llmsTxt";
  */
 
 const PORT = Number(process.env.SMOKE_PORT ?? 3987);
-const BASE = `http://127.0.0.1:${PORT}`;
+const BASE_PATH = process.env.BASE_PATH ?? ""; // as at build time, see next.config.ts
+const BASE = `http://127.0.0.1:${PORT}${BASE_PATH}`;
 const SERVER = ".next/standalone/server.js";
 
 const routes = allRoutes(client);
@@ -152,7 +153,13 @@ describe(`internal links resolve (${client.id})`, () => {
       const html = await (await fetch(`${BASE}${route.path}`)).text();
       const hrefs = [...html.matchAll(/href="(\/[^"#?]*)"/g)].map((m) => m[1]);
 
-      for (const href of new Set(hrefs)) {
+      for (const raw of new Set(hrefs)) {
+        // Under a base path every internal link must carry it; the route inventory doesn't.
+        if (!raw.startsWith(BASE_PATH)) {
+          broken.push(`${route.path} -> ${raw} (outside ${BASE_PATH})`);
+          continue;
+        }
+        const href = raw.slice(BASE_PATH.length) || "/";
         // Next's own asset paths are not pages.
         if (href.startsWith("/_next") || href.startsWith("/api")) continue;
         const normalised = href.length > 1 ? href.replace(/\/$/, "") : href;

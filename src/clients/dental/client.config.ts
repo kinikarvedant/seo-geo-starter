@@ -20,28 +20,28 @@ export const dental: ClientConfigInput = {
   foundedYear: 2009,
 
   site: {
-    url: "https://bridgeroaddental.duckdns.org",
+    url: "https://vedantkinikar.duckdns.org/demos/dental",
     locale: "en-AU",
     timezone: "Australia/Melbourne",
     titleTemplate: "%s | Bridge Road Dental Care",
   },
 
   contact: {
-    phone: "+61390104488",
-    phoneDisplay: "(03) 9010 4488",
-    email: "reception@bridgeroaddental.duckdns.org",
-    bookingUrl: "https://bridgeroaddental.duckdns.org/book",
+    phone: "+61355504488",
+    phoneDisplay: "(03) 5550 4488",
+    email: "reception@example.com",
+    bookingUrl: "https://vedantkinikar.duckdns.org/demos/dental/contact",
     emergency: true,
   },
 
   address: {
-    streetAddress: "312 Bridge Road",
+    streetAddress: "Bridge Road",
     suburb: "Richmond",
     state: "VIC",
     postcode: "3121",
     country: "AU",
     geo: { lat: -37.8187, lng: 145.0021 },
-    mapUrl: "https://maps.google.com/?q=312+Bridge+Road+Richmond+VIC+3121",
+    mapUrl: "https://maps.google.com/?q=Bridge+Road+Richmond+VIC+3121",
   },
 
   hours: {
@@ -155,7 +155,7 @@ export const dental: ClientConfigInput = {
       shortDescription:
         "Same-day emergency dental appointments in Richmond for toothache, broken teeth and lost fillings, six days a week.",
       answer:
-        "Same-day emergency appointments are held open every weekday and on Saturday morning at our Bridge Road surgery, so a broken tooth, lost filling, knocked-out tooth or severe toothache is usually seen within a few hours of your call. Phone (03) 9010 4488 before 4pm for same-day triage; after-hours messages are returned first thing.",
+        "Same-day emergency appointments are held open every weekday and on Saturday morning at our Bridge Road surgery, so a broken tooth, lost filling, knocked-out tooth or severe toothache is usually seen within a few hours of your call. Phone (03) 5550 4488 before 4pm for same-day triage; after-hours messages are returned first thing.",
       body: `## What counts as a dental emergency
 
 Pain that wakes you at night, a tooth knocked out or pushed out of line, a broken cusp with an edge that cuts your tongue, swelling in the gum or jaw, bleeding that will not settle after an extraction, or a crown that has come away and left a raw stump. All of those are worth a same-day call rather than a wait-and-see.

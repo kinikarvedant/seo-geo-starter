@@ -14,6 +14,15 @@ const nextConfig: NextConfig = {
   output: "standalone",
 
   /**
+   * Serves the site under a path, e.g. BASE_PATH=/demos/dental, for hosting a demo
+   * behind another origin. Read at build time like CLIENT_ID; set NEXT_PUBLIC_SITE_URL
+   * to the full URL including the path so canonicals match. robots.txt and llms.txt
+   * then sit under the path too, where crawlers don't look for them, so a client's
+   * real site still gets its own origin.
+   */
+  basePath: process.env.BASE_PATH || undefined,
+
+  /**
    * Mixed trailing slashes are a self-inflicted duplicate-content bug: /services and
    * /services/ become two URLs with the same content. Fixed here, asserted by the audit.
    */
