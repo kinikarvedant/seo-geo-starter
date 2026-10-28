@@ -160,7 +160,7 @@ The vans are stocked for the calls that actually come in overnight: copper and P
           label: "Payment",
           value: "Card, bank transfer or PayID on completion, with no deposit for emergency work",
         },
-        { label: "Licence", value: "VBA plumbing licence 104562, fully insured" },
+        { label: "Licence", value: "VBA plumbing licence 000000, fully insured" },
       ],
       priceFrom: {
         amount: 99,
@@ -453,7 +453,7 @@ Running gas to a new kitchen, a heater at the far end of the house or an outdoor
       keyFacts: [
         {
           label: "Licence",
-          value: "Type A gasfitting with servicing endorsement, VBA licence 104562",
+          value: "Type A gasfitting with servicing endorsement, VBA licence 000000",
         },
         {
           label: "Compliance certificate",
@@ -566,7 +566,7 @@ At fit-off we set the mixers, hang the pan, connect the shower and vanity, and c
     {
       question: "Are you licensed and insured?",
       answer:
-        "Yes. We hold a Victorian Building Authority plumbing licence, number 104562, with a gasfitting and gas servicing endorsement, and $20 million public liability cover. The number is on the van, on every invoice and on every compliance certificate we lodge, and you are welcome to check it on the VBA's public register before we start work.",
+        "Yes. We hold a Victorian Building Authority plumbing licence, number 000000, with a gasfitting and gas servicing endorsement, and $20 million public liability cover. The number is on the van, on every invoice and on every compliance certificate we lodge, and you are welcome to check it on the VBA's public register before we start work.",
       tags: ["trust"],
     },
     {
@@ -623,7 +623,7 @@ At fit-off we set the mixers, hang the pan, connect the shower and vanity, and c
 
   trust: {
     abn: "42 617 903 118",
-    licenceNumber: "VBA plumbing licence 104562",
+    licenceNumber: "VBA plumbing licence 000000",
     reviews: {
       rating: 4.8,
       count: 212,
